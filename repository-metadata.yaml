@@ -1,0 +1,37 @@
+# Repository metadata (machine-readable)
+
+name: "process-meteoblue-hub"
+# `gh repo view piergiorgio-roveda/cp-copilot-gis-orchestra-2 --json id -q .id`
+repoId: ""
+repoSlug: "process_meteoblue_hub"
+description: "Ingest and retrieve data from Meteoblue"
+created: "2026-01-26T00:00:00Z"
+owner: "SaferPlaces2023"
+status: "draft" # draft | stable | deprecated
+version: "0.0.0"
+license: "TBD"
+isPublic: false
+clientId: "SP"
+
+tags:
+  - gis
+  - github
+
+repoUrl: "https://github.com/SaferPlaces2023/process-meteoblue-hub"
+
+maintainers:
+  - name: "Tommaso Redaelli"
+    github: "@PMG-t"
+    email: "tommaso.redaelli@gecosistema.com"
+
+ci:
+  githubActions: false
+
+databases: ""
+
+storages: ""
+
+relatedRepositories: ""
+
+parentRepository: ""
+deprecatedRepository: ""

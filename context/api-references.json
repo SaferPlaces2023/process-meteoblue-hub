@@ -1,0 +1,53 @@
+{
+  "id": "api-references",
+  "version": "1.0.0",
+  "description": "External and internal API references for integration.",
+  "status": "draft",
+  "apis": [
+    {
+      "id": "overpass-api",
+      "name": "Overpass API",
+      "type": "external",
+      "baseUrl": "https://overpass-api.de/api",
+      "documentation": "https://wiki.openstreetmap.org/wiki/Overpass_API",
+      "purpose": "Query OpenStreetMap data",
+      "rateLimit": "10000 requests/day",
+      "authentication": "none"
+    },
+    {
+      "id": "nominatim-api",
+      "name": "Nominatim Geocoding",
+      "type": "external",
+      "baseUrl": "https://nominatim.openstreetmap.org",
+      "documentation": "https://nominatim.org/release-docs/latest/api/Overview/",
+      "purpose": "Geocoding and reverse geocoding",
+      "rateLimit": "1 request/second",
+      "authentication": "none"
+    },
+    {
+      "id": "mapbox-api",
+      "name": "Mapbox APIs",
+      "type": "external",
+      "baseUrl": "https://api.mapbox.com",
+      "documentation": "https://docs.mapbox.com/api/",
+      "purpose": "Geocoding, routing, static maps",
+      "authentication": "api-key",
+      "envVar": "MAPBOX_ACCESS_TOKEN"
+    },
+    {
+      "id": "postgis-api",
+      "name": "PostGIS Database",
+      "type": "internal",
+      "connection": "postgresql://localhost:5432/gisdb",
+      "purpose": "Spatial data storage and queries",
+      "authentication": "credentials",
+      "envVar": "DATABASE_URL"
+    }
+  ],
+  "authTypes": {
+    "none": "No authentication required",
+    "api-key": "API key in header or query param",
+    "credentials": "Username/password or connection string",
+    "oauth2": "OAuth 2.0 flow"
+  }
+}

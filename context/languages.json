@@ -1,0 +1,20 @@
+{
+  "id": "languages",
+  "version": "1.0.0",
+  "description": "Programming language preferences and priority levels for project development.",
+  "status": "draft",
+  "languages": [
+    {
+      "name": "Python",
+      "alias": ["py"],
+      "priority": "allowed",
+      "notes": "Primary for GIS scripting, data processing, and automation"
+    }
+  ],
+  "priorityLevels": {
+    "preferred": "First choice for new development",
+    "allowed": "Acceptable when justified",
+    "discouraged": "Avoid unless legacy requirement",
+    "never-use": "Explicitly prohibited"
+  }
+}

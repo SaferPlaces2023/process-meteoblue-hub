@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "id": "master-orchestrator",
+  "version": "2.0.0",
+  "description": "MASTER Configuration for the Geospatial Application Framework. Defines the topology of Data, Engines, Components, and Groups.",
+  "status": "active",
+  "framework": {
+    "components": {
+      "id": "component-registry",
+      "file": "components.json",
+      "description": "Discrete Functional Units (Layers, Widgets)"
+    }
+  },
+  "knowledge_base": [
+    {
+      "id": "languages",
+      "file": "languages.json",
+      "description": "Programming language preferences and priority levels"
+    },
+    {
+      "id": "dependencies",
+      "file": "dependencies.json",
+      "description": "Library dependencies and version constraints"
+    },
+    {
+      "id": "api-references",
+      "file": "api-references.json",
+      "description": "External and internal API endpoints"
+    },
+    {
+      "id": "backend-tools",
+      "file": "backend-tools.json",
+      "description": "Backend tools for GIS processing"
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "id": "backend-tools",
+  "version": "1.2.0",
+  "description": "Backend tools and functionalities available for GIS processing.",
+  "status": "draft",
+  "tools": [
+    {
+      "id": "gdal-ogr",
+      "name": "GDAL/OGR",
+      "category": "data-conversion",
+      "skill": ".github/skills/gdal-ogr/SKILL.md",
+      "capabilities": [
+        "Vector format conversion",
+        "Raster format conversion",
+        "Coordinate reprojection",
+        "Data subsetting and clipping"
+      ]
+    },
+    {
+      "id": "postgis",
+      "name": "PostGIS",
+      "category": "spatial-database",
+      "skill": ".github/skills/postgis/SKILL.md",
+      "agent": ".github/agents/postgresql-dba.agent.md",
+      "capabilities": [
+        "Spatial indexing",
+        "Geometry operations",
+        "Spatial joins",
+        "Raster analysis",
+        "Network analysis"
+      ]
+    },
+    {
+      "id": "qgis-processing",
+      "name": "QGIS Processing",
+      "category": "geoprocessing",
+      "skill": ".github/skills/qgis-processing/SKILL.md",
+      "capabilities": ["Vector analysis", "Raster analysis", "Model building", "Batch processing"]
+    },
+    {
+      "id": "geopandas",
+      "name": "GeoPandas",
+      "category": "python-library",
+      "skill": ".github/skills/geopandas/SKILL.md",
+      "capabilities": [
+        "Vector data manipulation",
+        "Spatial operations",
+        "Data aggregation",
+        "File I/O"
+      ]
+    }
+  ],
+  "categories": {
+    "data-conversion": "Format translation and transformation",
+    "spatial-database": "Database with spatial capabilities",
+    "geoprocessing": "Spatial analysis and processing",
+    "python-library": "Python package for GIS operations"
+  }
+}

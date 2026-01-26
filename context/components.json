@@ -1,0 +1,32 @@
+{
+  "id": "component-registry",
+  "version": "1.0.0",
+  "description": "Registry of Discrete Functional Units (Layers, Widgets).",
+  "components": [
+    {
+      "id": "standard-basemap",
+      "type": "map-view",
+      "engine": "maplibre-gl-js",
+      "configuration": {
+        "style": "https://demotiles.maplibre.org/style.json",
+        "center": [0, 0],
+        "zoom": 1
+      },
+      "description": "Standard basemap component using MapLibre engine."
+    },
+    {
+      "id": "zoning-layer",
+      "type": "vector-tile-layer",
+      "engine": "maplibre-gl-js",
+      "source": "processed-city-zones-tiles",
+      "configuration": {
+        "source-layer": "zoning_districts",
+        "paint": {
+          "fill-color": "#f08",
+          "fill-opacity": 0.4
+        }
+      },
+      "description": "Visualization of zoning districts using PMTiles source."
+    }
+  ]
+}
