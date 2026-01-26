@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "process-meteoblue-hub"
+version = "0.0.1"
+description = "Ingest and retrieve data from Meteoblue"
+readme = "README.md"
+authors = [
+  { name="Tommaso Redaelli", email="tommaso.redaelli@gecosistema.com" }
+]
+license = { text = "TBD" }
+keywords = ["gis", "meteoblue", "pygeoapi"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent"
+]
+dependencies = [
+  "python-dotenv",
+  "requests",
+  "filelock",
+  "click",
+  "boto3",
+  "xarray",
+  "rioxarray",
+  "netcdf4",
+  "geopandas"
+]
+
+[project.optional-dependencies]
+pygeoapi = [
+  "numpy",
+  "numba",
+  "pygeoapi",
+]
+
+[project.urls]
+Homepage = "https://github.com/SaferPlaces2023/process-meteoblue-hub"
+
+[project.scripts]
+meteoblue-ingestor = "process_meteoblue_hub.main:cli_run_meteoblue_ingestor"
+meteoblue-retriever = "process_meteoblue_hub.main:cli_run_meteoblue_retriever"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
