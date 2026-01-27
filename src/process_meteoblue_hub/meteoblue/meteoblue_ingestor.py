@@ -58,7 +58,8 @@ class _MeteoblueIngestor():
         """
         Initialize the Meteoblue Ingestor.
         """
-        pass
+        if not os.path.exists(self._tmp_data_folder):
+            os.makedirs(self._tmp_data_folder)
 
 
     def _set_tmp_data_folder(self, tmp_data_folder):
