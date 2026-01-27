@@ -19,6 +19,7 @@ classifiers = [
 dependencies = [
   "python-dotenv",
   "requests",
+  "aiohttp",
   "filelock",
   "click",
   "boto3",

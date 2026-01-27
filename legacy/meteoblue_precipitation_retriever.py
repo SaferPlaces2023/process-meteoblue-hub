@@ -135,7 +135,6 @@ PROCESS_METADATA = {
         "inputs": {
             "token": "ABC123XYZ666",
             "debug": True,
-            "forecast_run": ["2025-02-26T00:00:00", "2025-02-26T12:00:00"]
         }
     }
 }
