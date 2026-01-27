@@ -104,11 +104,11 @@ class _MeteoblueIngestor():
         Logger.debug(f"Validating arguments: {kwargs}")
 
         variable = kwargs.get('variable', None)
-        service = kwargs.get('service', _consts._SERVICE_BASIC_5MIN)
+        service = kwargs.get('service') or _consts._SERVICE_BASIC_5MIN
         location_name = kwargs.get('location_name', None)
         lat_range = kwargs.get('lat_range', None)
         long_range = kwargs.get('long_range', None)
-        grid_res = kwargs.get('grid_res', _consts._GRID.DEFAULT_RESOLUTION)
+        grid_res = kwargs.get('grid_res') or _consts._GRID.DEFAULT_RESOLUTION
         time_delta = kwargs.get('time_delta', None)
         bucket_destination = kwargs.get('bucket_destination', None)
         out_dir = kwargs.get('out_dir', None)
