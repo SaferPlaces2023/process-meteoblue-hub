@@ -301,12 +301,18 @@ class _MeteoblueRetriever():
             
             # If not available in bucket, we need the datasets locally or fail
             if data_source_uris is None:
-                raise StatusException(
-                    StatusException.ERROR,
-                    f'Required datasets for {var} not found in bucket {bucket_source}. '
-                    f'Please run meteoblue-ingestor first for location "{location_name}" '
-                    f'to generate the required NetCDF files.'
+                meteoblue_ingestor = _MeteoblueIngestor()
+                meteoblue_ingestor_out = meteoblue_ingestor.run(
+                    variable = variable,
+                    location_name = location_name,
+                    lat_range = lat_range,
+                    long_range = long_range,
+                    out_dir = self._tmp_data_folder,
+                    bucket_destination = bucket_source
                 )
+                if meteoblue_ingestor_out.get('status', 'ERROR') != 'OK':
+                    raise StatusException(StatusException.ERROR, f'Error during ICON2I ingestor run: {meteoblue_ingestor_out["message"]}')    
+                data_source_uris = [cdi['ref'] for cdi in meteoblue_ingestor_out['collected_data_info'] if cdi['variable'] == var]
             
             # Download files from S3 if needed
             retrieved_files = []
