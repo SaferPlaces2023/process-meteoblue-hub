@@ -447,7 +447,7 @@ class _MeteoblueRetriever():
             driver='COG',
             compress='LZW',
             predictor=2,
-            tags={'band_names': ','.join(timestamps)}
+            tags={'band_names': timestamps}
         )
         
         Logger.info(f'Created timestamp raster: {multiband_raster_filepath}')
