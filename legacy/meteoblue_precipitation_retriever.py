@@ -185,10 +185,10 @@ class MeteobluePrecipitationRetrieverProcessor(BaseProcessor):
         grid_res = data.get('grid_res', 1000)
         if type(grid_res) is not int:
             raise ProcessorExecuteError('Grid resolution must be an integer')
-        if grid_res % 100 != 0:
-            raise ProcessorExecuteError('Grid resolution must be a multiple of 100')
-        if grid_res < 100:
-            raise ProcessorExecuteError('Grid resolution must be greater than 100')
+        # if grid_res % 100 != 0:
+        #     raise ProcessorExecuteError('Grid resolution must be a multiple of 100')
+        # if grid_res < 100:
+        #     raise ProcessorExecuteError('Grid resolution must be greater than 100')
         
         today_date = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
         if time_start < today_date.replace(hour=0, minute=0, second=0, microsecond=0):
