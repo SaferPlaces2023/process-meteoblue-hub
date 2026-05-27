@@ -87,6 +87,14 @@ PROCESS_METADATA = {
                 'type': 'array'
             }
         },
+        'grid_res': {
+            'title': 'Grid resolution',
+            'description': 'The grid resolution in meters. Must be a multiple of 100. Default is 1000 meters. (Used in case of MeteoblueIngestor calling)',
+            'schema': {
+                'type': 'integer',
+                'minimum': 100
+            }
+        },
         'time_range': {
             'title': 'Time range',
             'description': 'The time range in format [time_start, time_end]. Both must be in ISO format. If not provided, all times will be returned.',

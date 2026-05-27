@@ -85,6 +85,7 @@ class _MeteoblueRetriever():
                 - location_name: Location identifier (required)
                 - lat_range: Latitude range [min, max]
                 - long_range: Longitude range [min, max]
+                - grid_res: Grid resolution in meters
                 - time_range: Time range [start, end]
                 - out_format: Output format (default: 'tif')
                 - bucket_source: S3 bucket source
@@ -100,6 +101,7 @@ class _MeteoblueRetriever():
         location_name = kwargs.get('location_name', None)
         lat_range = kwargs.get('lat_range', None)
         long_range = kwargs.get('long_range', None)
+        grid_res = kwargs.get('grid_res') or _consts._GRID.DEFAULT_RESOLUTION
         time_range = kwargs.get('time_range', None)
         time_start = time_range[0] if isinstance(time_range, (list, tuple)) else time_range
         time_end = time_range[1] if isinstance(time_range, (list, tuple)) and len(time_range) > 1 else None
@@ -151,6 +153,14 @@ class _MeteoblueRetriever():
                 raise StatusException(StatusException.INVALID, 'long_range values must be numbers')
             if not (-180 <= long_range[0] < long_range[1] <= 180):
                 raise StatusException(StatusException.INVALID, 'long_range must be in valid EPSG:4326 range [-180, 180] with min < max')
+            
+        # Validate grid_res
+        if not isinstance(grid_res, int):
+            raise StatusException(StatusException.INVALID, 'grid_res must be an integer')
+        if grid_res < _consts._GRID.MIN_RESOLUTION:
+            raise StatusException(StatusException.INVALID, f'grid_res must be >= {_consts._GRID.MIN_RESOLUTION} meters')
+        if grid_res % _consts._GRID.RESOLUTION_MULTIPLE != 0:
+            raise StatusException(StatusException.INVALID, f'grid_res must be a multiple of {_consts._GRID.RESOLUTION_MULTIPLE} meters')
 
         # Validate time_range
         if time_start is None:
@@ -217,6 +227,7 @@ class _MeteoblueRetriever():
             'location_name': location_name,
             'lat_range': lat_range,
             'long_range': long_range,
+            'grid_res': grid_res,
             'time_start': time_start,
             'time_end': time_end,
             'out_format': out_format,
@@ -266,7 +277,7 @@ class _MeteoblueRetriever():
         return available_uris
 
 
-    def retrieve_meteoblue_data(self, location_name, variable, lat_range, long_range, time_start, time_end, bucket_source):
+    def retrieve_meteoblue_data(self, location_name, variable, lat_range, long_range, grid_res, time_start, time_end, bucket_source):
         """
         Retrieve Meteoblue data from NetCDF files.
         
@@ -275,6 +286,7 @@ class _MeteoblueRetriever():
             variable: Variable(s) to retrieve
             lat_range: Latitude range [min, max]
             long_range: Longitude range [min, max]
+            grid_res: Grid resolution in meters
             time_start: Start time
             time_end: End time
             bucket_source: S3 bucket source
@@ -307,6 +319,7 @@ class _MeteoblueRetriever():
                     location_name = location_name,
                     lat_range = lat_range,
                     long_range = long_range,
+                    grid_res = grid_res,
                     out_dir = self._tmp_data_folder,
                     bucket_destination = bucket_source
                 )
@@ -462,6 +475,7 @@ class _MeteoblueRetriever():
         location_name: str = None,
         lat_range: list = None,
         long_range: list = None,
+        grid_res: int = None,
         time_range: list = None,
         out_format: str = None,
         bucket_source: str = None,
@@ -477,6 +491,7 @@ class _MeteoblueRetriever():
             location_name: Location identifier (required)
             lat_range: Latitude range [min, max]
             long_range: Longitude range [min, max]
+            grid_res: Grid resolution in meters
             time_range: Time range [start, end]
             out_format: Output format (default: 'tif')
             bucket_source: S3 bucket source
@@ -496,6 +511,7 @@ class _MeteoblueRetriever():
                 location_name=location_name,
                 lat_range=lat_range,
                 long_range=long_range,
+                grid_res=grid_res,
                 time_range=time_range,
                 out_format=out_format,
                 bucket_source=bucket_source,
@@ -507,6 +523,7 @@ class _MeteoblueRetriever():
             location_name = validated_args['location_name']
             lat_range = validated_args['lat_range']
             long_range = validated_args['long_range']
+            grid_res = validated_args['grid_res']
             time_start = validated_args['time_start']
             time_end = validated_args['time_end']
             out_format = validated_args['out_format']
@@ -520,6 +537,7 @@ class _MeteoblueRetriever():
                 variable=variable,
                 lat_range=lat_range,
                 long_range=long_range,
+                grid_res=grid_res,
                 time_start=time_start,
                 time_end=time_end,
                 bucket_source=bucket_source
