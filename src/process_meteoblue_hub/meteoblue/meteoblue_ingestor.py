@@ -228,11 +228,11 @@ class _MeteoblueIngestor():
         num_lat = int((lat_max - lat_min) // (grid_res * 1e-5))
         
         # Generate coordinate lists
-        lon_list = np.round(np.linspace(lon_min, lon_max, num_lon), 3)
-        lat_list = np.round(np.linspace(lat_min, lat_max, num_lat), 3)
+        lon_list = np.round(np.linspace(lon_min, lon_max, num_lon), 5)
+        lat_list = np.round(np.linspace(lat_min, lat_max, num_lat), 5)
         
         # Create coordinate pairs (lon, lat)
-        coords = [(lon, lat) for lat in lat_list for lon in lon_list]
+        coords = list(set((lon, lat) for lat in lat_list for lon in lon_list))
         
         Logger.debug(f'Generated {len(coords)} grid points ({num_lon}x{num_lat})')
         

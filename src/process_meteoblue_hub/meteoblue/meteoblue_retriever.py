@@ -355,11 +355,11 @@ class _MeteoblueRetriever():
             
             # Round coordinates for consistent querying
             dataset = dataset.assign_coords(
-                lat=np.round(dataset.lat.values, 6),
-                lon=np.round(dataset.lon.values, 6),
+                lat=np.round(dataset.lat.values, 5),
+                lon=np.round(dataset.lon.values, 5),
             )
             dataset = dataset.sortby(['time', 'lat', 'lon'])
-            
+
             # Filter by spatial and temporal ranges
             dataset = self.dataset_query(dataset, lat_range, long_range, [time_start, time_end])
             
@@ -383,6 +383,9 @@ class _MeteoblueRetriever():
             xr.Dataset: Filtered dataset
         """
         query_dataset = dataset.copy()
+
+        lat_range = np.round(lat_range, 5)
+        long_range = np.round(long_range, 5)
         
         # Filter by latitude
         if isinstance(lat_range, (list, tuple)) and len(lat_range) == 2:
