@@ -159,10 +159,10 @@ class _MeteoblueRetriever():
         # Validate grid_res
         if not isinstance(grid_res, int):
             raise StatusException(StatusException.INVALID, 'grid_res must be an integer')
-        if grid_res < _consts._GRID.MIN_RESOLUTION:
-            raise StatusException(StatusException.INVALID, f'grid_res must be >= {_consts._GRID.MIN_RESOLUTION} meters')
-        if grid_res % _consts._GRID.RESOLUTION_MULTIPLE != 0:
-            raise StatusException(StatusException.INVALID, f'grid_res must be a multiple of {_consts._GRID.RESOLUTION_MULTIPLE} meters')
+        # if grid_res < _consts._GRID.MIN_RESOLUTION:
+        #     raise StatusException(StatusException.INVALID, f'grid_res must be >= {_consts._GRID.MIN_RESOLUTION} meters')
+        # if grid_res % _consts._GRID.RESOLUTION_MULTIPLE != 0:
+        #     raise StatusException(StatusException.INVALID, f'grid_res must be a multiple of {_consts._GRID.RESOLUTION_MULTIPLE} meters')
 
         # Validate time_range
         if time_start is None:

@@ -161,10 +161,10 @@ class _MeteoblueIngestor():
         # Validate grid_res
         if not isinstance(grid_res, int):
             raise StatusException(StatusException.INVALID, 'grid_res must be an integer')
-        if grid_res < _consts._GRID.MIN_RESOLUTION:
-            raise StatusException(StatusException.INVALID, f'grid_res must be >= {_consts._GRID.MIN_RESOLUTION} meters')
-        if grid_res % _consts._GRID.RESOLUTION_MULTIPLE != 0:
-            raise StatusException(StatusException.INVALID, f'grid_res must be a multiple of {_consts._GRID.RESOLUTION_MULTIPLE} meters')
+        # if grid_res < _consts._GRID.MIN_RESOLUTION:
+        #     raise StatusException(StatusException.INVALID, f'grid_res must be >= {_consts._GRID.MIN_RESOLUTION} meters')
+        # if grid_res % _consts._GRID.RESOLUTION_MULTIPLE != 0:
+        #     raise StatusException(StatusException.INVALID, f'grid_res must be a multiple of {_consts._GRID.RESOLUTION_MULTIPLE} meters')
 
         # Validate time_delta
         service_config = _consts._SERVICES_DICT[service]
