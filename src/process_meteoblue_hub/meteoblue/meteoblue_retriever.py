@@ -88,6 +88,7 @@ class _MeteoblueRetriever():
                 - grid_res: Grid resolution in meters
                 - time_range: Time range [start, end]
                 - out_format: Output format (default: 'tif')
+                - t_srs: Target Spatial Reference System (default: 'EPSG:4326')
                 - bucket_source: S3 bucket source
                 - bucket_destination: S3 bucket destination
                 - out: Output file path
@@ -106,6 +107,7 @@ class _MeteoblueRetriever():
         time_start = time_range[0] if isinstance(time_range, (list, tuple)) else time_range
         time_end = time_range[1] if isinstance(time_range, (list, tuple)) and len(time_range) > 1 else None
         out_format = kwargs.get('out_format', None)
+        t_srs = kwargs.get('t_srs') or 'EPSG:4326'
         bucket_source = kwargs.get('bucket_source', None)
         bucket_destination = kwargs.get('bucket_destination', None)
         out = kwargs.get('out', None)
@@ -194,6 +196,14 @@ class _MeteoblueRetriever():
         else:
             out_format = 'tif'
 
+        if t_srs is not None:
+            if not isinstance(t_srs, str):
+                raise StatusException(StatusException.INVALID, 't_srs must be a string')
+            if not t_srs.startswith('EPSG:'):
+                raise StatusException(StatusException.INVALID, 't_srs must start with "EPSG:"')
+        else:
+            t_srs = "EPSG:4326"
+
         # Validate bucket_source
         if bucket_source is not None:
             if not isinstance(bucket_source, str):
@@ -231,6 +241,7 @@ class _MeteoblueRetriever():
             'time_start': time_start,
             'time_end': time_end,
             'out_format': out_format,
+            't_srs': t_srs,
             'bucket_source': bucket_source,
             'bucket_destination': bucket_destination,
             'out': out
@@ -324,7 +335,7 @@ class _MeteoblueRetriever():
                     bucket_destination = bucket_source
                 )
                 if meteoblue_ingestor_out.get('status', 'ERROR') != 'OK':
-                    raise StatusException(StatusException.ERROR, f'Error during ICON2I ingestor run: {meteoblue_ingestor_out["message"]}')    
+                    raise StatusException(StatusException.ERROR, f'Error during Meteoblue ingestor run: {meteoblue_ingestor_out["message"]}')    
                 data_source_uris = [cdi['ref'] for cdi in meteoblue_ingestor_out['collected_data_info'] if cdi['variable'] == var]
             
             # Download files from S3 if needed
@@ -396,7 +407,7 @@ class _MeteoblueRetriever():
         return query_dataset
 
 
-    def create_timestamp_raster(self, location_name, variable, dataset, out):
+    def create_timestamp_raster(self, location_name, variable, dataset, t_srs, out):
         """
         Create a multi-band GeoTIFF raster with temporal bands.
         
@@ -404,6 +415,7 @@ class _MeteoblueRetriever():
             location_name: Location identifier
             variable: Variable name
             dataset: xarray Dataset
+            t_srs: Target Spatial Reference System (optional)
             out: Output file path (optional)
             
         Returns:
@@ -427,14 +439,19 @@ class _MeteoblueRetriever():
             multiband_raster_filename = f'{_consts._DATASET_NAME}__{location_name}__{variable}__{timestamps[0]}.tif'
             multiband_raster_filepath = os.path.join(self._tmp_data_folder, multiband_raster_filename)
         else:
+            multiband_raster_filename = os.path.basename(out)
             multiband_raster_filepath = out
+
+        # Safe path
+        safe_multiband_raster_filename = multiband_raster_filename.replace(':', '_')
+        multiband_raster_filepath = multiband_raster_filepath.replace(multiband_raster_filename, safe_multiband_raster_filename)
         
         # Ensure output directory exists
         os.makedirs(os.path.dirname(multiband_raster_filepath) if os.path.dirname(multiband_raster_filepath) else '.', exist_ok=True)
         
         # Extract data array for the variable
         data_array = dataset[variable]
-        
+       
         # Sort latitude in descending order (GeoTIFF convention: north to south)
         data_array = data_array.sortby('lat', ascending=False)
         
@@ -442,10 +459,9 @@ class _MeteoblueRetriever():
         if data_array.dims != ('time', 'lat', 'lon'):
             data_array = data_array.transpose('time', 'lat', 'lon')
         
-        # Rename lat/lon to y/x for rioxarray compatibility
+        # Ensure GeoTransform → Rename lat/lon to y/x for rioxarray compatibility + set
         data_array = data_array.rename({'lat': 'y', 'lon': 'x'})
-        
-        # Set CRS
+        data_array = data_array.rio.set_spatial_dims(x_dim='x', y_dim='y')
         data_array = data_array.rio.write_crs('EPSG:4326')
         
         # Set nodata value
@@ -453,6 +469,9 @@ class _MeteoblueRetriever():
         
         # Replace NaN with nodata value
         data_array = data_array.fillna(-9999.0)
+
+        # Reproject to target CRS
+        data_array = data_array.rio.reproject(t_srs)
         
         # Save as Cloud-Optimized GeoTIFF
         data_array.rio.to_raster(
@@ -466,7 +485,7 @@ class _MeteoblueRetriever():
         Logger.info(f'Created timestamp raster: {multiband_raster_filepath}')
         Logger.debug(f'Raster dimensions: {data_array.shape} (time, y, x)')
         
-        return multiband_raster_filepath
+        return multiband_raster_filepath, multiband_raster_filename
 
 
     def run(
@@ -478,6 +497,7 @@ class _MeteoblueRetriever():
         grid_res: int = None,
         time_range: list = None,
         out_format: str = None,
+        t_srs: str = None,
         bucket_source: str = None,
         bucket_destination: str = None,
         out: str = None,
@@ -514,6 +534,7 @@ class _MeteoblueRetriever():
                 grid_res=grid_res,
                 time_range=time_range,
                 out_format=out_format,
+                t_srs=t_srs,
                 bucket_source=bucket_source,
                 bucket_destination=bucket_destination,
                 out=out
@@ -527,6 +548,7 @@ class _MeteoblueRetriever():
             time_start = validated_args['time_start']
             time_end = validated_args['time_end']
             out_format = validated_args['out_format']
+            t_srs = validated_args['t_srs']
             bucket_source = validated_args['bucket_source']
             bucket_destination = validated_args['bucket_destination']
             out = validated_args['out']
@@ -550,19 +572,20 @@ class _MeteoblueRetriever():
                 Logger.debug(f'Creating timestamp raster for variable: {var}')
                 
                 # Create timestamp raster
-                timestamp_raster = self.create_timestamp_raster(
+                timestamp_raster_tmp, timestamp_raster_dst = self.create_timestamp_raster(
                     location_name=location_name,
                     variable=var,
                     dataset=dataset,
+                    t_srs=t_srs,
                     out=out
                 )
                 
-                variables_timestamp_rasters_refs[var] = timestamp_raster
+                variables_timestamp_rasters_refs[var] = timestamp_raster_tmp
                 
                 # Upload to S3 if bucket_destination is provided
                 if bucket_destination is not None:
-                    bucket_uri = f"{bucket_destination}/{filesystem.justfname(timestamp_raster)}"
-                    upload_status = module_s3.s3_upload(timestamp_raster, bucket_uri, remove_src=False)
+                    bucket_uri = f"{bucket_destination}/{timestamp_raster_dst}"
+                    upload_status = module_s3.s3_upload(timestamp_raster_tmp, bucket_uri, remove_src=False)
                     if not upload_status:
                         raise StatusException(
                             StatusException.ERROR,
@@ -585,7 +608,7 @@ class _MeteoblueRetriever():
                 }
             else:
                 # If no output destination, return the raster path
-                outputs = timestamp_raster if len(variables_timestamp_rasters_refs) == 1 else variables_timestamp_rasters_refs
+                outputs = timestamp_raster_tmp if len(variables_timestamp_rasters_refs) == 1 else variables_timestamp_rasters_refs
             
             Logger.info(f'Successfully retrieved {len(variable)} variable(s)')
             

@@ -111,6 +111,13 @@ PROCESS_METADATA = {
                 'default': 'tif'
             }
         },
+        't_srs': {
+            'title': 'Target Spatial Reference System',
+            'description': 'The target spatial reference system (SRS) for the output data. If not provided, the default is EPSG:4326.',
+            'schema': {
+                'type': 'string'
+            }
+        },
         'out': {
             'title': 'Output file path',
             'description': 'The output file path. If not provided, the data will be stored in a temporary directory.',
