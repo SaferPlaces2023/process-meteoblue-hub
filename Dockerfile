@@ -24,6 +24,14 @@ RUN chmod +x /lambda-entrypoint.sh
 
 COPY ./lambda/* /var/task/
 WORKDIR /var/task
+
+# Dual-mode processor configuration
+# METEOBLUE_PROCESSOR_MODE: "local" (default) or "lambda"
+# - "local": Run logic locally in the processor (backward compatible, writes to cwd)
+# - "lambda": Invoke Lambda function for processing (writes only to /tmp)
+ENV METEOBLUE_PROCESSOR_MODE=lambda
+ENV AWS_REGION=us-east-1
+
 # These following lines are for the AWS Lambda and should be set on the AWS Lambda function on aws web console
 # or using aws lambda update-function-configuration --function-name <function-name> --handler <handler-name>
 # ENTRYPOINT [ "/opt/venv/bin/python", "-m", "awslambdaric" ] for Ubuntu

@@ -6,5 +6,5 @@ import importlib.util
 if importlib.util.find_spec('pygeoapi') is not None:
     from .meteoblue import MeteoblueIngestorProcessor, MeteoblueRetrieverProcessor
 
-from .main import run_meteoblue_ingestor
+from .main import run_meteoblue_ingestor, run_meteoblue_retriever
 from .utils.strings import parse_event

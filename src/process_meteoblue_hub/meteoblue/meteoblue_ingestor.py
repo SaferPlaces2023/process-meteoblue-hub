@@ -52,7 +52,8 @@ class _MeteoblueIngestor():
 
     name = f'{_consts._DATASET_NAME}__Ingestor'
 
-    _tmp_data_folder = os.path.join(os.getcwd(), name)
+    # DOC: in lambda mode only /tmp is writable, so use a tempdir; otherwise use the current working directory
+    _tmp_data_folder = filesystem.tempdir(name) if os.getenv('METEOBLUE_PROCESSOR_MODE') == "lambda" else os.path.join(os.getcwd(), name)
 
     def __init__(self):
         """

@@ -1,25 +1,41 @@
 from process_meteoblue_hub import parse_event
-from process_meteoblue_hub import run_meteoblue_ingestor as main_function
+from process_meteoblue_hub import run_meteoblue_ingestor, run_meteoblue_retriever
 
 
-def lambda_handler(event, context):
+def ingestor_handler(event, context):
     """
-    lambda_handler - lambda function for Meteoblue Ingestor
+    ingestor_handler - lambda function for the Meteoblue ingestor
     """
-    kwargs = parse_event(event, main_function)
+    kwargs = parse_event(event, run_meteoblue_ingestor)
 
-    res = main_function(**kwargs)
+    res = run_meteoblue_ingestor(**kwargs)
 
     return {
-        "statusCode": 200, 
+        "statusCode": 200,
         "body": {
-            "result": res   
+            "result": res
+        }
+    }
+
+
+def retriever_handler(event, context):
+    """
+    retriever_handler - lambda function for the Meteoblue retriever
+    """
+    kwargs = parse_event(event, run_meteoblue_retriever)
+
+    res = run_meteoblue_retriever(**kwargs)
+
+    return {
+        "statusCode": 200,
+        "body": {
+            "result": res
         }
     }
 
 
 if __name__ == "__main__":
-    event = {
+    ingestor_event = {
         "variable": "precipitation",
         "service": "basic-1h",
         "lat_range": "45.0,46.0",
@@ -27,7 +43,14 @@ if __name__ == "__main__":
         "grid_res": "1000",
         "debug": "false"
     }
+    print(ingestor_handler(ingestor_event, None))
 
-    kwargs = parse_event(event, main_function)
-    res = main_function(**kwargs)
-    print(res)
+    retriever_event = {
+        "variable": "precipitation",
+        "lat_range": "45.0,46.0",
+        "long_range": "7.0,8.0",
+        "time_range": "2025-01-21T08:00:00,2025-01-22T23:00:00",
+        "out_format": "tif",
+        "debug": "false"
+    }
+    print(retriever_handler(retriever_event, None))

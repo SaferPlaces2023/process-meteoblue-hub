@@ -25,7 +25,7 @@ maintainers:
     email: "tommaso.redaelli@gecosistema.com"
 
 ci:
-  githubActions: false
+  githubActions: true
 
 databases: ""
 
