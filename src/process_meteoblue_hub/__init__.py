@@ -8,6 +8,3 @@ if importlib.util.find_spec('pygeoapi') is not None:
 
 from .main import run_meteoblue_ingestor, run_meteoblue_retriever
 from .utils.strings import parse_event
-
-MeteobluePrecipitationRetrieverProcessor = MeteoblueRetrieverProcessor
-MeteobluePrecipitationIngestorProcessor = MeteoblueIngestorProcessor
