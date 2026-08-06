@@ -293,6 +293,12 @@ class _ARG_NAMES_METEOBLUE_RETRIEVER():
         'default': None,
         'example': '--time_range 2026-01-27T00:00:00,2026-01-28T00:00:00',
     }
+    GRID_RES = {
+        'aliases': ['--grid_res', '--res'],
+        'help': "Grid resolution in meters (minimum 100, multiple of 100).",
+        'default': 1000,
+        'example': '--grid_res 1000',
+    }
     OUT_FORMAT = {
         'aliases': ['--out_format', '--format'],
         'help': "Output format (default: tif).",
@@ -348,6 +354,12 @@ class _ARG_NAMES_METEOBLUE_RETRIEVER():
     type=str,
     default=_ARG_NAMES_METEOBLUE_RETRIEVER.TIME_RANGE['default'],
     help=_ARG_NAMES_METEOBLUE_RETRIEVER.TIME_RANGE['help'],
+)
+@click.option(
+    *_ARG_NAMES_METEOBLUE_RETRIEVER.GRID_RES['aliases'],
+    type=int,
+    default=_ARG_NAMES_METEOBLUE_RETRIEVER.GRID_RES['default'],
+    help=_ARG_NAMES_METEOBLUE_RETRIEVER.GRID_RES['help'],
 )
 @click.option(
     *_ARG_NAMES_METEOBLUE_RETRIEVER.OUT_FORMAT['aliases'],
@@ -418,6 +430,7 @@ def run_meteoblue_retriever(
     lat_range = None,
     long_range = None,
     time_range = None,
+    grid_res = None,
     out_format = 'tif',
     out = None,
     bucket_source = None,
@@ -453,6 +466,7 @@ def run_meteoblue_retriever(
             lat_range=lat_range,
             long_range=long_range,
             time_range=time_range,
+            grid_res=grid_res,
             out_format=out_format,
             out=out,
             bucket_source=bucket_source,
