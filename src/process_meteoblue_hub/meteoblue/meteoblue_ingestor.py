@@ -104,6 +104,10 @@ class _MeteoblueIngestor():
         """
         Logger.debug(f"Validating arguments: {kwargs}")
 
+        # Fail fast if the API key is missing, otherwise every grid request fails downstream with a cryptic aiohttp error
+        if not self.get_api_key():
+            raise StatusException(StatusException.ERROR, 'METEOBLUE_API_KEY environment variable is not set')
+
         variable = kwargs.get('variable', None)
         service = kwargs.get('service') or _consts._SERVICE_BASIC_5MIN
         location_name = kwargs.get('location_name', None)

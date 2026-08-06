@@ -9,6 +9,11 @@ WORKDIR /var/tmp/process_meteoblue_hub
 RUN pip install .
 ADD tests /var/task/tests
 
+# Fix PROJ database version mismatch (pyproj expects v6+, base image has v4)
+RUN apt-get update && apt-get install -y --no-install-recommends proj-bin libproj-dev && \
+    pip install --upgrade --force-reinstall pyproj && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
 #Clean up
 RUN pip cache purge
 RUN apt-get remove -y git && \
