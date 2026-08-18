@@ -1,18 +1,24 @@
 # Copyright (c) 2025 Gecosistema S.r.l.
 
 #FROM ghcr.io/osgeo/gdal:ubuntu-small-3.7.0
-FROM 901702069075.dkr.ecr.us-east-1.amazonaws.com/docker-gdal
+FROM ubuntu:24.04
 
 COPY src /var/tmp/process_meteoblue_hub/src
 COPY pyproject.toml /var/tmp/process_meteoblue_hub/
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip \
+    python3-venv \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /var/tmp/process_meteoblue_hub 
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+RUN pip install --upgrade pip setuptools wheel
 RUN pip install .
 ADD tests /var/task/tests
-
-# Fix PROJ database version mismatch (pyproj expects v6+, base image has v4)
-RUN apt-get update && apt-get install -y --no-install-recommends proj-bin libproj-dev && \
-    pip install --upgrade --force-reinstall pyproj && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 #Clean up
 RUN pip cache purge
