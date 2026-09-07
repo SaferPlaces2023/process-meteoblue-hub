@@ -229,8 +229,9 @@ class _MeteoblueIngestor():
         
         # Calculate number of points based on grid resolution
         # 1e-5 is approximate conversion factor from meters to degrees at equator
-        num_lon = int((lon_max - lon_min) // (grid_res * 1e-5))
-        num_lat = int((lat_max - lat_min) // (grid_res * 1e-5))
+        # Minimum of 2 ensures the grid never collapses to a single point/line (breaks raster resolution/reproject downstream)
+        num_lon = max(2, int((lon_max - lon_min) // (grid_res * 1e-5)))
+        num_lat = max(2, int((lat_max - lat_min) // (grid_res * 1e-5)))
         
         # Generate coordinate lists
         lon_list = np.round(np.linspace(lon_min, lon_max, num_lon), 5)
