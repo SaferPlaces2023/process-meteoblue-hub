@@ -468,7 +468,7 @@ class _MeteoblueIngestor():
             
             # Upload to S3 if destination provided
             if bucket_destination:
-                uri = os.path.join(bucket_destination, fn)
+                uri = f"{bucket_destination.rstrip('/')}/{fn}"
                 self.upload_to_s3(fp, uri)
                 date_dataset_ref['ref']['uri'] = uri
             

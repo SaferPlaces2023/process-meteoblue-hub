@@ -587,7 +587,7 @@ class _MeteoblueRetriever():
                 
                 # Upload to S3 if bucket_destination is provided
                 if bucket_destination is not None:
-                    bucket_uri = f"{bucket_destination}/{timestamp_raster_dst}"
+                    bucket_uri = f"{bucket_destination.rstrip('/')}/{timestamp_raster_dst}"
                     upload_status = module_s3.s3_upload(timestamp_raster_tmp, bucket_uri, remove_src=False)
                     if not upload_status:
                         raise StatusException(
