@@ -52,7 +52,8 @@ class _MeteoblueIngestor():
 
     name = f'{_consts._DATASET_NAME}__Ingestor'
 
-    _tmp_data_folder = os.path.join(os.getcwd(), name)
+    # DOC: in lambda mode only /tmp is writable, so use a tempdir; otherwise use the current working directory
+    _tmp_data_folder = filesystem.tempdir(name) if os.getenv('METEOBLUE_PROCESSOR_MODE') == "lambda" else os.path.join(os.getcwd(), name)
 
     def __init__(self):
         """
@@ -102,6 +103,10 @@ class _MeteoblueIngestor():
             dict: Validated arguments
         """
         Logger.debug(f"Validating arguments: {kwargs}")
+
+        # Fail fast if the API key is missing, otherwise every grid request fails downstream with a cryptic aiohttp error
+        if not self.get_api_key():
+            raise StatusException(StatusException.ERROR, 'METEOBLUE_API_KEY environment variable is not set')
 
         variable = kwargs.get('variable', None)
         service = kwargs.get('service') or _consts._SERVICE_BASIC_5MIN
@@ -224,8 +229,9 @@ class _MeteoblueIngestor():
         
         # Calculate number of points based on grid resolution
         # 1e-5 is approximate conversion factor from meters to degrees at equator
-        num_lon = int((lon_max - lon_min) // (grid_res * 1e-5))
-        num_lat = int((lat_max - lat_min) // (grid_res * 1e-5))
+        # Minimum of 2 ensures the grid never collapses to a single point/line (breaks raster resolution/reproject downstream)
+        num_lon = max(2, int((lon_max - lon_min) // (grid_res * 1e-5)))
+        num_lat = max(2, int((lat_max - lat_min) // (grid_res * 1e-5)))
         
         # Generate coordinate lists
         lon_list = np.round(np.linspace(lon_min, lon_max, num_lon), 5)

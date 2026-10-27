@@ -1,11 +1,22 @@
 # Copyright (c) 2025 Gecosistema S.r.l.
 
 #FROM ghcr.io/osgeo/gdal:ubuntu-small-3.7.0
-FROM 901702069075.dkr.ecr.us-east-1.amazonaws.com/docker-gdal
+FROM ubuntu:24.04
 
 COPY src /var/tmp/process_meteoblue_hub/src
 COPY pyproject.toml /var/tmp/process_meteoblue_hub/
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3-pip \
+    python3-venv \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /var/tmp/process_meteoblue_hub 
+ENV VIRTUAL_ENV=/opt/venv
+RUN python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+RUN pip install --upgrade pip setuptools wheel
 RUN pip install .
 ADD tests /var/task/tests
 
@@ -24,6 +35,14 @@ RUN chmod +x /lambda-entrypoint.sh
 
 COPY ./lambda/* /var/task/
 WORKDIR /var/task
+
+# Dual-mode processor configuration
+# METEOBLUE_PROCESSOR_MODE: "local" (default) or "lambda"
+# - "local": Run logic locally in the processor (backward compatible, writes to cwd)
+# - "lambda": Invoke Lambda function for processing (writes only to /tmp)
+ENV METEOBLUE_PROCESSOR_MODE=lambda
+ENV AWS_REGION=us-east-1
+
 # These following lines are for the AWS Lambda and should be set on the AWS Lambda function on aws web console
 # or using aws lambda update-function-configuration --function-name <function-name> --handler <handler-name>
 # ENTRYPOINT [ "/opt/venv/bin/python", "-m", "awslambdaric" ] for Ubuntu
