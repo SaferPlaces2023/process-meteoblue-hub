@@ -305,6 +305,12 @@ class _ARG_NAMES_METEOBLUE_RETRIEVER():
         'default': 'tif',
         'example': '--out_format tif',
     }
+    T_SRS = {
+        'aliases': ['--t_srs'],
+        'help': "Target spatial reference system (default: EPSG:4326).",
+        'default': 'EPSG:4326',
+        'example': '--t_srs EPSG:3857',
+    }
     OUT = {
         'aliases': ['--out', '--output'],
         'help': "Output file path. If not provided, the output will be stored in a temporary directory.",
@@ -366,6 +372,12 @@ class _ARG_NAMES_METEOBLUE_RETRIEVER():
     type=click.Choice(['tif'], case_sensitive=True),
     default=_ARG_NAMES_METEOBLUE_RETRIEVER.OUT_FORMAT['default'],
     help=_ARG_NAMES_METEOBLUE_RETRIEVER.OUT_FORMAT['help'],
+)
+@click.option(
+    *_ARG_NAMES_METEOBLUE_RETRIEVER.T_SRS['aliases'],
+    type=str,
+    default=_ARG_NAMES_METEOBLUE_RETRIEVER.T_SRS['default'],
+    help=_ARG_NAMES_METEOBLUE_RETRIEVER.T_SRS['help'],
 )
 @click.option(
     *_ARG_NAMES_METEOBLUE_RETRIEVER.OUT['aliases'],
@@ -432,6 +444,7 @@ def run_meteoblue_retriever(
     time_range = None,
     grid_res = None,
     out_format = 'tif',
+    t_srs = None,
     out = None,
     bucket_source = None,
     bucket_destination = None,
@@ -468,6 +481,7 @@ def run_meteoblue_retriever(
             time_range=time_range,
             grid_res=grid_res,
             out_format=out_format,
+            t_srs=t_srs,
             out=out,
             bucket_source=bucket_source,
             bucket_destination=bucket_destination,
